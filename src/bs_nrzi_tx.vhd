@@ -20,9 +20,7 @@ architecture rtl of bs_nrzi_tx is
   signal tx_fsm_state : tx_fsm_t;
   signal tx_fsm_next  : tx_fsm_t;
 
-  signal h_reg    : std_logic_vector(7 downto 0);
   signal s_reg    : std_logic_vector(7 downto 0);
-  signal h_load   : std_logic;
   signal s_load   : std_logic;
   signal s_shift  : std_logic;
 
@@ -73,22 +71,13 @@ begin
         s_reg <= x"80"; -- SYNC pattern
       else
         if s_load = '1' then
-          s_reg <= h_reg;
+          s_reg <= di;
         elsif s_shift = '1' then
           s_reg(6 downto 0) <= s_reg(7 downto 1);
         end if;
       end if;
     end if;
   end process s_reg_p;
-
-  h_reg_p: process (clk48)
-  begin
-    if rising_edge(clk48) then
-      if h_load = '1' then
-        h_reg <= di;
-      end if;
-    end if;
-  end process h_reg_p;
 
   bit_cnt_p: process (clk48)
   begin
@@ -240,8 +229,7 @@ begin
   one_cnt_inc <= '1' when tx_en = '1' and bit_mark = '1' and  s_reg(0) = '1' and stuff0 = '0' else '0';
   one_cnt_clr <= '1' when tx_en = '0' or (bit_mark = '1' and (s_reg(0) = '0'  or stuff0 = '1')) else '0';
 
-  h_load <= '1' when enable = '1' and bit_cnt = "110" and bit_mark = '1' and stuff0 = '0' else '0';
-  ready  <= h_load;
+  ready  <= s_load;
 
   stuff0 <= '1' when tx_en = '1'  and one_cnt = "110" and bit_mark = '1' and bypass = '0' else '0';
 
