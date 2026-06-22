@@ -1,11 +1,11 @@
-DUT := ddff
+DUT := bs_nrzi_tx
 TB := $(DUT)_tb
 
 TRACE := $(TB).fst
 
 NVC := nvc
 
-NVC_RUN_FLAGS := $(NVC_FLAGS) --stop-time=500ns
+# NVC_RUN_FLAGS := $(NVC_FLAGS) --stop-time=500ns
 
 VIEWER := surfer
 
@@ -26,7 +26,7 @@ run: elaborate
 	$(NVC) -r $(TB) $(NVC_RUN_FLAGS)
 
 view: $(TRACE)
-	$(VIEWER) $(TRACE)
+	$(VIEWER) --state-file sim/$(TB).surf.ron $(TRACE)
 
 $(TRACE): elaborate
 	$(NVC) -r $(TB)  $(NVC_RUN_FLAGS) --wave=$(TRACE)
