@@ -52,13 +52,13 @@ begin
       else
         case clk_cnt is
           when "00" => clk_cnt <= "01";
-                       bit_mark <= '0';
+                       bit_mark <= '1';
           when "01" => clk_cnt <= "11";
                        bit_mark <= '0';
           when "11" => clk_cnt <= "10";
                        bit_mark <= '0';
           when "10" => clk_cnt <= "00";
-                       bit_mark <= '1';
+                       bit_mark <= '0';
           when others => null;
         end case;
       end if;
