@@ -196,7 +196,7 @@ begin
         end if;
 
       when ACTIVE_EXIT_ST =>
-        if bit_mark = '1' then
+        if bit_mark = '1' and stuff0 = '0' then
           tx_fsm_next <= EOP_SE0_1_ST;
         else
           tx_fsm_next <= ACTIVE_EXIT_ST;
