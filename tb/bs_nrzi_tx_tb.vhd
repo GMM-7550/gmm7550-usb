@@ -55,13 +55,13 @@ begin
       else
         case clock is
           when 0 =>
-            di <= x"00" after pdelay;
+            di <= x"fc" after pdelay;
             enable <= '1' after pdelay;
 
-          when 30 =>
-            di <= x"ff" after pdelay;
+          -- when 30 =>
+          --   di <= x"ff" after pdelay;
 
-          when 100 =>
+          when 50 =>
             enable <= '0' after pdelay;
 
           when 200 =>
