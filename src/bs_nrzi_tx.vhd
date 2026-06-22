@@ -16,7 +16,8 @@ entity bs_nrzi_tx is
 end entity bs_nrzi_tx;
 
 architecture rtl of bs_nrzi_tx is
-  type tx_fsm_t is (IDLE_ST, SYNC_ST, ACTIVE_ST, EOP_SE0_1_ST, EOP_SE0_2_ST, EOP_J_ST);
+  type tx_fsm_t is (IDLE_ST, SYNC_ST, ACTIVE_ST, ACTIVE_EXIT_ST,
+                    EOP_SE0_1_ST, EOP_SE0_2_ST, EOP_J_ST);
   signal tx_fsm_state : tx_fsm_t;
   signal tx_fsm_next  : tx_fsm_t;
 
@@ -130,7 +131,7 @@ begin
     if rising_edge (clk48) then
       if reset = '1' or tx_en = '0' then
         txd <= '1';
-      elsif s_reg(0) = '0' and bit_mark = '1' or stuff0 = '1' then
+      elsif bit_mark = '1' and (s_reg(0) = '0' or stuff0 = '1') then
         txd <= not txd;
       end if;
     end if;
@@ -175,7 +176,7 @@ begin
             s_load <= '1';
             tx_fsm_next <= ACTIVE_ST;
           else
-            tx_fsm_next <= EOP_SE0_1_ST;
+            tx_fsm_next <= ACTIVE_EXIT_ST;
           end if;
         else
           tx_fsm_next <= SYNC_ST;
@@ -188,10 +189,17 @@ begin
             s_load <= '1';
             tx_fsm_next <= ACTIVE_ST;
           else
-            tx_fsm_next <= EOP_SE0_1_ST;
+            tx_fsm_next <= ACTIVE_EXIT_ST;
           end if;
         else
           tx_fsm_next <= ACTIVE_ST;
+        end if;
+
+      when ACTIVE_EXIT_ST =>
+        if bit_mark = '1' then
+          tx_fsm_next <= EOP_SE0_1_ST;
+        else
+          tx_fsm_next <= ACTIVE_EXIT_ST;
         end if;
 
       when EOP_SE0_1_ST =>
@@ -222,11 +230,13 @@ begin
     end case;
   end process tx_fsm_p;
 
-  byte_mark <= '1' when bit_cnt = "111" and bit_mark = '1' and stuff0 = '0' else '0';
+  byte_mark <= '1' when bit_mark = '1' and bit_cnt = "111" else '0';
 
-  bit_cnt_inc <= '1' when tx_en = '1' and bit_mark = '1' and stuff0 = '0' else '0';
+  bit_cnt_inc <= '1' when bit_mark = '1' and (tx_fsm_state = SYNC_ST or tx_fsm_state = ACTIVE_ST)
+                          and stuff0 = '0'
+                     else '0';
 
-  one_cnt_inc <= '1' when tx_en = '1' and bit_mark = '1' and  s_reg(0) = '1' and stuff0 = '0' else '0';
+  one_cnt_inc <= '1' when bit_cnt_inc = '1' and s_reg(0) = '1' else '0';
   one_cnt_clr <= '1' when tx_en = '0' or (bit_mark = '1' and (s_reg(0) = '0'  or stuff0 = '1')) else '0';
 
   ready  <= s_load;
