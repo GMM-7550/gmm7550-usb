@@ -1,7 +1,9 @@
+TEST ?= SyncOnly
+
 DUT := bs_nrzi_tx
 TB := $(DUT)_tb
 
-TRACE := $(TB).fst
+TRACE := $(TEST).fst
 
 NVC := nvc
 
@@ -10,7 +12,9 @@ NVC := nvc
 VIEWER := surfer
 
 VHDL_FILES := $(wildcard src/*.vhd)
-VHDL_FILES += $(wildcard tb/*.vhd)
+
+VHDL_FILES += tb/testctrl_e.vhd tb/bs_nrzi_tx_tb.vhd
+VHDL_FILES += $(wildcard tb/*_test.vhd)
 
 .PHONY: all clean analyze elaborate run view
 
@@ -20,16 +24,17 @@ analyze: $(VHDL_FILES)
 	$(NVC) -a $(VHDL_FILES)
 
 elaborate: analyze
-	$(NVC) -e $(TB)
+	$(NVC) -e $(TEST)_test
 
 run: elaborate
-	$(NVC) -r $(TB) $(NVC_RUN_FLAGS)
+	$(NVC) -r $(TEST)_test $(NVC_RUN_FLAGS)
 
 view: $(TRACE)
 	$(VIEWER) --state-file sim/$(TB).surf.ron $(TRACE)
 
 $(TRACE): elaborate
-	$(NVC) -r $(TB)  $(NVC_RUN_FLAGS) --wave=$(TRACE)
+	$(NVC) -r $(TEST)_test  $(NVC_RUN_FLAGS) --wave=$(TRACE)
 
 clean:
 	$(RM) $(TRACE)
+	$(RM) -r ./work

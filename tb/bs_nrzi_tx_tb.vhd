@@ -10,6 +10,15 @@ architecture sim of bs_nrzi_tx_tb is
   constant clk_period : time := 20.83 ns;
   constant pdelay     : time := 1 ns;
 
+  component testctrl is
+    port (
+      clk48  : in  std_logic;
+      reset  : in  std_logic;
+      enable : out std_logic;
+      bypass : out std_logic;
+      di : out std_logic_vector(7 downto 0));
+  end component testctrl;
+
   signal clk48  : std_logic := '1';
   signal reset  : std_logic;
   signal clock  : integer := 0;
@@ -45,32 +54,13 @@ begin
     end if;
   end process clk_cnt_p;
 
-  test_controller_p: process (clk48)
-  begin
-    if rising_edge(clk48) then
-      if reset = '1' then
-        enable <= '0';
-        bypass <= '0';
-        di <= (others => '0');
-      else
-        case clock is
-          when 0 =>
-            di <= x"fc" after pdelay;
-            enable <= '1' after pdelay;
-
-          -- when 30 =>
-          --   di <= x"ff" after pdelay;
-
-          when 50 =>
-            enable <= '0' after pdelay;
-
-          when 200 =>
-            std.env.stop;
-          when others => null;
-        end case;
-      end if;
-    end if;
-  end process test_controller_p;
+  testctrl_i: component testctrl
+    port map (
+      clk48 => clk48,
+      reset => reset,
+      enable => enable,
+      bypass => bypass,
+      di => di);
 
   dut: entity work.bs_nrzi_tx
     port map (
