@@ -24,16 +24,10 @@ begin
       else
         case clock is
           when 0 =>
-            di <= x"fc" after pdelay;
             enable <= '1' after pdelay;
-
-          -- when 30 =>
-          --   di <= x"ff" after pdelay;
-
-          when 50 =>
+          when 20 =>
             enable <= '0' after pdelay;
-
-          when 200 =>
+          when 55 =>
             std.env.stop;
           when others => null;
         end case;
