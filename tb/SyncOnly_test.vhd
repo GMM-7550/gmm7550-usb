@@ -37,7 +37,7 @@ begin
 
 end architecture SyncOnly;
 
-configuration SyncOnly_test of bs_nrzi_tx_tb is
+configuration SyncOnly_test of bs_nrzi_tb is
     for sim
         for testctrl_i: testctrl
             use entity work.testctrl_e(SyncOnly);

@@ -28,8 +28,8 @@
         format: Fst,
         active_scope: Some(WaveScope((
             strs: [
-                "bs_nrzi_tx_tb",
-                "dut",
+                "bs_nrzi_tb",
+                "dut_tx",
             ],
             id: Wellen((3)),
         ))),
@@ -258,8 +258,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -281,8 +281,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -304,8 +304,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -327,8 +327,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -355,8 +355,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -383,8 +383,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -406,7 +406,7 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
+                            "bs_nrzi_tb",
                         ],
                         id: Wellen((2)),
                     ),
@@ -428,8 +428,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -451,7 +451,7 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
+                            "bs_nrzi_tb",
                         ],
                         id: Wellen((2)),
                     ),
@@ -473,7 +473,7 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
+                            "bs_nrzi_tb",
                         ],
                         id: Wellen((2)),
                     ),
@@ -500,8 +500,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -533,8 +533,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -556,7 +556,7 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
+                            "bs_nrzi_tb",
                         ],
                         id: Wellen((2)),
                     ),
@@ -578,8 +578,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -601,8 +601,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -629,8 +629,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -652,8 +652,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -675,7 +675,7 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
+                            "bs_nrzi_tb",
                         ],
                         id: Wellen((2)),
                     ),
@@ -697,7 +697,7 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
+                            "bs_nrzi_tb",
                         ],
                         id: Wellen((2)),
                     ),
@@ -724,8 +724,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -752,8 +752,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -775,8 +775,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -798,7 +798,7 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
+                            "bs_nrzi_tb",
                         ],
                         id: Wellen((2)),
                     ),
@@ -820,7 +820,7 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
+                            "bs_nrzi_tb",
                         ],
                         id: Wellen((2)),
                     ),
@@ -847,7 +847,7 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
+                            "bs_nrzi_tb",
                         ],
                         id: Wellen((2)),
                     ),
@@ -869,8 +869,8 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
-                            "dut",
+                            "bs_nrzi_tb",
+                            "dut_tx",
                         ],
                         id: Wellen((4)),
                     ),
@@ -892,7 +892,7 @@
                 variable_ref: (
                     path: (
                         strs: [
-                            "bs_nrzi_tx_tb",
+                            "bs_nrzi_tb",
                         ],
                         id: Wellen((2)),
                     ),

@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 
 library std;
 
-entity bs_nrzi_tx_tb is
-end entity bs_nrzi_tx_tb;
+entity bs_nrzi_tb is
+end entity bs_nrzi_tb;
 
-architecture sim of bs_nrzi_tx_tb is
+architecture sim of bs_nrzi_tb is
   constant clk_period : time := 20.83 ns;
   constant pdelay     : time := 1 ns;
 
@@ -30,6 +30,14 @@ architecture sim of bs_nrzi_tx_tb is
   signal tx_dp  : std_logic;
   signal tx_dn  : std_logic;
   signal tx_en  : std_logic;
+
+  signal do     : std_logic_vector(7 downto 0);
+  signal valid  : std_logic;
+  signal active : std_logic;
+  signal rx_err : std_logic;
+  signal bs_err : std_logic;
+  signal fr_err : std_logic;
+
 begin
 
   clk48 <= not clk48 after clk_period / 2;
@@ -62,7 +70,7 @@ begin
       bypass => bypass,
       di => di);
 
-  dut: entity work.bs_nrzi_tx
+  dut_tx: entity work.bs_nrzi_tx
     port map (
       clk48  => clk48,
       reset  => reset,
@@ -74,5 +82,21 @@ begin
       tx_dn  => tx_dn,
       tx_en  => tx_en
       );
+
+  dut_rx: entity work.bs_nrzi_rx
+    port map (
+      clk48  => clk48,
+      reset  => reset,
+    -- enable => enable,
+      rxd    => tx_dp,
+      rx_dp  => tx_dp,
+      rx_dn  => tx_dn,
+
+      do     => do,
+      valid  => valid,
+      active => active,
+      rx_err => rx_err,
+      bs_err => bs_err,
+      fr_err => fr_err);
 
 end architecture sim;

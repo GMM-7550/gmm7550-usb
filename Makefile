@@ -1,6 +1,6 @@
 TEST ?= SyncOnly
 
-DUT := bs_nrzi_tx
+DUT := bs_nrzi
 TB := $(DUT)_tb
 
 TRACE := $(TEST).fst
@@ -13,7 +13,7 @@ VIEWER := surfer
 
 VHDL_FILES := $(wildcard src/*.vhd)
 
-VHDL_FILES += tb/testctrl_e.vhd tb/bs_nrzi_tx_tb.vhd
+VHDL_FILES += tb/testctrl_e.vhd tb/$(TB).vhd
 VHDL_FILES += $(wildcard tb/*_test.vhd)
 
 .PHONY: all clean analyze elaborate run view
