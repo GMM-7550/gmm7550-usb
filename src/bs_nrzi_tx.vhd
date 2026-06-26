@@ -230,7 +230,7 @@ begin
     end case;
   end process tx_fsm_p;
 
-  byte_mark <= '1' when bit_mark = '1' and bit_cnt = "111" else '0';
+  byte_mark <= '1' when bit_mark = '1' and bit_cnt = "111" and stuff0 = '0' else '0';
 
   bit_cnt_inc <= '1' when bit_mark = '1' and (tx_fsm_state = SYNC_ST or tx_fsm_state = ACTIVE_ST)
                           and stuff0 = '0'
