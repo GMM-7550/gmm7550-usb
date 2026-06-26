@@ -28,6 +28,7 @@ architecture rtl of bs_nrzi_rx is
   signal rx_fsm_next  : rx_fsm_t;
 
   signal se0     : std_logic;
+  signal se0d    : std_logic;
   signal rxdd    : std_logic;
   signal rx_edge : std_logic;
 
@@ -52,6 +53,13 @@ architecture rtl of bs_nrzi_rx is
 begin
 
   se0 <= '1' when rx_dp = '0' and rx_dn = '0' else '0';
+
+  se0d_p: process (clk48)
+  begin
+    if rising_edge(clk48) then
+      se0d <= se0;
+    end if;
+  end process se0d_p;
 
   rxdd_p: process (clk48)
   begin
@@ -103,8 +111,10 @@ begin
           when "011" =>
             if rx_edge then
               data <= '0';
-              bit_stb <= '1';
               cdr <= "001";
+              if not (se0 or se0d) then
+                bit_stb <= '1';
+              end if;
             else
               cdr <= "100";
             end if;
@@ -112,8 +122,10 @@ begin
           when "100" =>
             if rx_edge then
               data <= '0';
-              bit_stb <= '1';
               cdr <= "001";
+              if not (se0 or se0d) then
+                bit_stb <= '1';
+              end if;
             else
               cdr <= "101";
             end if;
@@ -121,12 +133,16 @@ begin
           when "101" =>
             if rx_edge then
               data <= '0';
-              bit_stb <= '1';
               cdr <= "001";
+              if not (se0 or se0d) then
+                bit_stb <= '1';
+              end if;
             else
               data <= '1';
-              bit_stb <= '1';
               cdr <= "010";
+              if not (se0 or se0d) then
+                bit_stb <= '1';
+              end if;
             end if;
 
           when others =>
