@@ -36,5 +36,5 @@ $(TRACE): elaborate
 	$(NVC) -r $(TEST)_test  $(NVC_RUN_FLAGS) --wave=$(TRACE)
 
 clean:
-	$(RM) $(TRACE)
+	$(RM) *.fst
 	$(RM) -r ./work
