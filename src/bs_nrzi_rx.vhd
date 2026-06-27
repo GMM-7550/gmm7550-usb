@@ -21,7 +21,7 @@ entity bs_nrzi_rx is
 end entity bs_nrzi_rx;
 
 architecture rtl of bs_nrzi_rx is
-  type rx_fsm_t is (IDLE_ST, SYNC_ST, ACTIVE_ST,
+  type rx_fsm_t is (IDLE_ST, SYNC_ST, CHECK_SYNC_ST, ACTIVE_ST,
                     ERR_SYNC_ST, ERR_TIME_ST, ERR_BS_ST, ERR_FRAME_ST,
                     EOP_ST);
   signal rx_fsm_state : rx_fsm_t;
@@ -37,8 +37,6 @@ architecture rtl of bs_nrzi_rx is
   signal bit_err : std_logic;
   signal bit_stb : std_logic;
 
-  signal byte_mark : std_logic;
-
   signal bit_cnt : std_logic_vector(2 downto 0);
   signal bit_cnt_inc : std_logic;
   signal bit_cnt_clr : std_logic;
@@ -50,6 +48,11 @@ architecture rtl of bs_nrzi_rx is
   signal s_reg : std_logic_vector(7 downto 0);
   signal s_reg_shift : std_logic;
 
+  signal h_reg : std_logic_vector(7 downto 0);
+  signal h_reg_load : std_logic;
+
+  signal bit_cnt_inc_d : std_logic;
+  signal h_reg_load_d  : std_logic;
 begin
 
   se0 <= '1' when rx_dp = '0' and rx_dn = '0' else '0';
@@ -72,13 +75,12 @@ begin
 
   cdr_p: process (clk48)
   begin
-    bit_stb <= '0';
-    bit_err <= '0';
-
     if rising_edge(clk48) then
       if reset = '1' then
         cdr  <= "000";
         data <= '0';
+        bit_stb <= '0';
+        bit_err <= '0';
       else
         case cdr is
 
@@ -87,12 +89,15 @@ begin
               cdr <= "001";
               data <= '0';
               bit_stb <= '1';
+              bit_err <= '0';
             else
               cdr <= "000";
               bit_stb <= '0';
             end if;
 
           when "001" =>
+            bit_err <= '0';
+            bit_stb <= '0';
             if rx_edge then
               cdr <= "000";
               bit_err <= '1';
@@ -101,6 +106,8 @@ begin
             end if;
 
           when "010" =>
+            bit_err <= '0';
+            bit_stb <= '0';
             if rx_edge then
               cdr <= "000";
               bit_err <= '1';
@@ -109,6 +116,8 @@ begin
             end if;
 
           when "011" =>
+            bit_err <= '0';
+            bit_stb <= '0';
             if rx_edge then
               data <= '0';
               cdr <= "001";
@@ -120,6 +129,8 @@ begin
             end if;
 
           when "100" =>
+            bit_err <= '0';
+            bit_stb <= '0';
             if rx_edge then
               data <= '0';
               cdr <= "001";
@@ -131,6 +142,8 @@ begin
             end if;
 
           when "101" =>
+            bit_err <= '0';
+            bit_stb <= '0';
             if rx_edge then
               data <= '0';
               cdr <= "001";
@@ -146,6 +159,8 @@ begin
             end if;
 
           when others =>
+            bit_err <= '0';
+            bit_stb <= '0';
             cdr <= "000";
         end case;
       end if;
@@ -157,9 +172,13 @@ begin
   begin
     if rising_edge(clk48) then
       if reset = '1' or bit_cnt_clr = '1' then
+        bit_cnt_inc_d <= '0';
         bit_cnt <= "000";
       elsif bit_cnt_inc = '1' then
+        bit_cnt_inc_d <= '1';
         bit_cnt <= std_logic_vector(unsigned(bit_cnt) + 1);
+      else
+        bit_cnt_inc_d <= '0';
       end if;
     end if;
   end process bit_cnt_p;
@@ -175,6 +194,32 @@ begin
     end if;
   end process one_cnt_p;
 
+  s_reg_p: process (clk48)
+  begin
+    if rising_edge(clk48) then
+      if reset = '1' then
+        s_reg <= (others => '0');
+      elsif s_reg_shift = '1' then
+        s_reg <= data & s_reg(7 downto 1);
+      end if;
+    end if;
+  end process s_reg_p;
+
+  h_reg_p: process (clk48)
+  begin
+    if rising_edge(clk48) then
+      if reset = '1' then
+        h_reg_load_d <= '0';
+        h_reg <= (others => '0');
+      elsif h_reg_load = '1' then
+        h_reg_load_d <= '1';
+        h_reg <= s_reg;
+      else
+        h_reg_load_d <= '0';
+      end if;
+    end if;
+  end process h_reg_p;
+
   rx_fsm_state_p: process (clk48, reset)
   begin
     if reset = '1' then
@@ -188,31 +233,137 @@ begin
   begin
     rx_fsm_next <= IDLE_ST;
 
+    bit_cnt_inc <= '0';
+    bit_cnt_clr <= '0';
+    one_cnt_inc <= '0';
+    one_cnt_clr <= '0';
+
+    s_reg_shift <= '0';
+
+    rx_err <= '0';
+    bs_err <= '0';
+    fr_err <= '0';
+
+    active <= '0';
+
     case rx_fsm_state is
 
       when IDLE_ST =>
+        bit_cnt_clr <= '1';
+        one_cnt_clr <= '1';
         if rx_edge = '1' then
           rx_fsm_next <= SYNC_ST;
         end if;
 
       when SYNC_ST =>
-        if rx_edge = '1' then
-          if bit_cnt = "001" or bit_cnt = "010" then
-            rx_fsm_next <= ERR_TIME_ST;
+        s_reg_shift <= bit_stb;
+        bit_cnt_inc <= bit_stb;
+        if se0 = '1' then
+          rx_fsm_next <= IDLE_ST;
+        elsif bit_err = '1' then
+          rx_fsm_next <= ERR_TIME_ST;
+        elsif bit_stb = '1' then
+          bit_cnt_inc <= '1';
+          one_cnt_inc <= data;
+          if bit_cnt = "111" then
+            rx_fsm_next <= CHECK_SYNC_ST;
+          else
+            rx_fsm_next <= SYNC_ST;
           end if;
         else
-          null;
+          rx_fsm_next <= SYNC_ST;
+        end if;
+
+      when CHECK_SYNC_ST =>
+        if s_reg = x"80" then
+          rx_fsm_next <= ACTIVE_ST;
+        else
+          rx_fsm_next <= ERR_SYNC_ST;
+        end if;
+
+      when ACTIVE_ST =>
+        active <= '1';
+        if se0 = '1' then
+          if bit_cnt = "000" then
+            rx_fsm_next <= EOP_ST;
+          else
+            rx_fsm_next <= ERR_FRAME_ST;
+          end if;
+        else -- not SE0
+          if bit_err = '1' then
+            rx_fsm_next <= ERR_TIME_ST;
+          elsif bit_stb = '1' then
+            if one_cnt = "110" then
+              if data = '0' then -- stuffed '0', skip it
+                one_cnt_clr <= '1';
+                rx_fsm_next <= ACTIVE_ST;
+              else
+                rx_fsm_next <= ERR_BS_ST;
+              end if;
+            else
+              s_reg_shift <= '1';
+              bit_cnt_inc <= '1';
+              if data = '0' then
+                one_cnt_clr <= '1';
+              else
+                one_cnt_inc <= '1';
+              end if;
+              rx_fsm_next <= ACTIVE_ST;
+            end if;
+          else
+            rx_fsm_next <= ACTIVE_ST;
+          end if;
+        end if;
+
+      when EOP_ST =>
+        bit_cnt_clr <= '1';
+        one_cnt_clr <= '1';
+        if se0 = '1' or se0d = '1' then
+          rx_fsm_next <= EOP_ST;
+        else
+          rx_fsm_next <= IDLE_ST;
+        end if;
+
+      when ERR_TIME_ST =>
+        bit_err <= '1';
+        if se0 = '1' then
+          rx_fsm_next <= EOP_ST;
+        else
+          rx_fsm_next <= ERR_TIME_ST;
+        end if;
+
+      when ERR_SYNC_ST =>
+        fr_err <= '1';
+        if se0 = '1' then
+          rx_fsm_next <= EOP_ST;
+        else
+          rx_fsm_next <= ERR_SYNC_ST;
+        end if;
+
+      when ERR_BS_ST =>
+        bs_err <= '1';
+        if se0 = '1' then
+          rx_fsm_next <= EOP_ST;
+        else
+          rx_fsm_next <= ERR_BS_ST;
+        end if;
+
+      when ERR_FRAME_ST =>
+        fr_err <= '1';
+        if se0 = '1' then
+          rx_fsm_next <= EOP_ST;
+        else
+          rx_fsm_next <= ERR_FRAME_ST;
         end if;
 
       when others => null;
     end case;
   end process rx_fsm_p;
 
-  do <= s_reg;
+  h_reg_load <= '1' when rx_fsm_state = ACTIVE_ST and bit_cnt_inc_d = '1' and bit_cnt = "000"
+                else '0';
 
-  -- valid  <= '0';
-  -- active <= '0';
-  -- bs_err <= '0';
-  -- fr_err <= '0';
+  do <= h_reg;
+  valid <= h_reg_load_d;
 
 end architecture rtl;
