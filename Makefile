@@ -1,6 +1,6 @@
-TEST ?= SyncOnly
+TEST ?= crc5_full
 
-DUT := bs_nrzi
+DUT := crc5
 TB := $(DUT)_tb
 
 TRACE := $(TEST).fst
@@ -13,7 +13,8 @@ VIEWER := surfer
 
 VHDL_FILES := $(wildcard src/*.vhd)
 
-VHDL_FILES += tb/testctrl_e.vhd tb/$(TB).vhd
+VHDL_FILES += $(wildcard tb/*_e.vhd)
+VHDL_FILES += $(wildcard tb/*_tb.vhd)
 VHDL_FILES += $(wildcard tb/*_test.vhd)
 
 .PHONY: all clean analyze elaborate run view
@@ -21,7 +22,9 @@ VHDL_FILES += $(wildcard tb/*_test.vhd)
 all: $(TRACE)
 
 analyze: $(VHDL_FILES)
-	$(NVC) -a $(VHDL_FILES)
+	for f in $(VHDL_FILES); do \
+	$(NVC) -a $$f; \
+	done
 
 elaborate: analyze
 	$(NVC) -e $(TEST)_test
