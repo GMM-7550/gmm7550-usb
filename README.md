@@ -1,6 +1,6 @@
-# USB Controller for GateMate FPGA
-
 <img src="/doc/gmm-usb-blue-black.png" width="20%">
+
+# USB Controller for GateMate FPGA
 
 ## Reference Hardware Platform
 
