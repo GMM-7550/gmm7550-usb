@@ -79,7 +79,9 @@ begin
   print_p: process (clk48) is
   begin
     if rising_edge(clk48) then
-      report to_hstring(dout);
+      if o_valid = '1' then
+        report to_hstring(dout);
+      end if;
     end if;
   end process;
 
