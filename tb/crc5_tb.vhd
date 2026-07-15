@@ -19,6 +19,18 @@ architecture sim of crc5_tb is
       ready : in  std_logic);
   end component data11;
 
+  component crc5_gen is
+    port (
+      clk48      : in  std_logic;
+      reset      : in  std_logic;
+      din        : in  std_logic_vector(10 downto 0);
+      din_valid  : in  std_logic;
+      din_ready  : out std_logic;
+      dout       : out std_logic_vector(15 downto 0);
+      dout_valid : out std_logic;
+      dout_ready : in  std_logic);
+  end component crc5_gen;
+
   signal clk48 : std_logic := '1';
   signal reset : std_logic := '1';
   signal din   : std_logic_vector(10 downto 0);
@@ -51,7 +63,7 @@ begin
       valid => i_valid,
       ready => i_ready);
 
-  dut: entity work.crc5_gen
+  dut: component crc5_gen
     port map (
       clk48      => clk48,
       reset      => reset,

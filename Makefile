@@ -1,4 +1,4 @@
-TEST ?= crc5_full
+TEST ?= crc5_seq
 
 DUT := crc5
 TB := $(DUT)_tb

@@ -26,20 +26,17 @@ begin
   end process din_p;
 end architecture sim;
 
-configuration crc5_full_test of crc5_tb is
+configuration crc5_seq_test of crc5_tb is
   for sim
+
     for testctrl_i: data11
       use entity work.data11_e(sim)
         generic map (MAX_DATA => 2048);
     end for;
-  end for;
-end configuration;
 
-configuration crc5_short_test of crc5_tb is
-  for sim
-    for testctrl_i: data11
-      use entity work.data11_e(sim)
-        generic map (MAX_DATA => 32);
+    for dut: crc5_gen
+      use entity work.crc5_gen_e(sequential);
     end for;
+
   end for;
 end configuration;

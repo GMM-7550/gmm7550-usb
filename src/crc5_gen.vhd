@@ -1,22 +1,8 @@
 library ieee;
-use ieee.std_logic_1164.all;
+-- use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity crc5_gen is
-  port (
-    clk48      : in  std_logic;
-    reset      : in  std_logic;
-
-    din        : in  std_logic_vector(10 downto 0);
-    din_valid  : in  std_logic;
-    din_ready  : out std_logic;
-
-    dout       : out std_logic_vector(15 downto 0);
-    dout_valid : out std_logic;
-    dout_ready : in  std_logic);
-end entity crc5_gen;
-
-architecture rtl of crc5_gen is
+architecture sequential of crc5_gen_e is
   type crc_fsm_t is (IDLE_ST, WAIT_ST, CNT_ST, RESULT_ST);
   signal crc_state : crc_fsm_t;
   signal crc_next  : crc_fsm_t;
@@ -135,12 +121,4 @@ begin
   dout(10 downto  0) <= di;
   dout(15 downto 11) <= not crc;
 
-  -- dout(10 downto 0) <= din(10 downto 0);
-
-  -- dout(15) <= (din(0) xor din(1) xor din(2) xor                       din(5) xor din(6) xor din(8));
-  -- dout(14) <= (din(0) xor din(1) xor din(2) xor din(3) xor din(4) xor din(7) xor din(8) xor din(10));
-  -- dout(13) <= (din(0) xor din(1) xor din(2) xor din(3) xor din(4) xor din(7) xor din(8) xor din(10));
-  -- dout(12) <= not(din(0) xor                       din(3) xor din(4) xor            din(6) xor din(9));
-  -- dout(11) <= (din(0) xor din(1) xor                       din(4) xor din(5) xor din(7) xor din(10));
-
-end architecture rtl;
+end architecture sequential;
