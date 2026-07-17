@@ -14,6 +14,7 @@ entity crc5_tb is
   generic (
     CRC5_FILENAME: string  := "./sim/crc5.txt";
     INSERT_ERROR : boolean := false;
+    USE_RANDOM   : boolean := true;
     DEBUG_PRINT  : boolean := false);
 begin
 end entity crc5_tb;
@@ -79,6 +80,7 @@ begin
     variable iline   : line;
     variable crc     : std_logic_vector(15 downto 0);
   begin
+    SetUseRandomDelays(StreamTxRec, USE_RANDOM);
     file_open(crc5_values, CRC5_FILENAME, read_mode);
     SetAlertLogName("CRC5_Test");
     SB <= NewID("CRC5_SB");
@@ -103,6 +105,7 @@ begin
   dout_p: process
     variable crc : std_logic_vector(15 downto 0);
   begin
+    SetUseRandomDelays(StreamRxRec, USE_RANDOM);
     while not (TestDone = 1) loop
       Get(StreamRxRec, crc);
 
