@@ -1,23 +1,26 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
 
-entity crc5_tb is begin
+library osvvm;
+context osvvm.OsvvmContext;
+use osvvm.ScoreboardPkg_slv.all;
+
+library osvvm_AXI4;
+context osvvm_AXI4.AxiStreamContext;
+
+use std.textio.all;
+
+entity crc5_tb is
+  generic (
+    CRC5_FILENAME: string  := "./sim/crc5.txt";
+    INSERT_ERROR : boolean := false;
+    DEBUG_PRINT  : boolean := false);
+begin
 end entity crc5_tb;
 
 architecture sim of crc5_tb is
   constant clk_period : time := 20.83 ns;
   constant pdelay     : time := 1 ns;
-
-  component data11 is
-    generic (MAX_DATA : integer := 32);
-    port (
-      clk48 : in  std_logic;
-      reset : in  std_logic;
-      data  : out std_logic_vector(10 downto 0);
-      valid : out std_logic;
-      ready : in  std_logic);
-  end component data11;
 
   component crc5_gen is
     port (
@@ -31,6 +34,17 @@ architecture sim of crc5_tb is
       dout_ready : in  std_logic);
   end component crc5_gen;
 
+  signal StreamTxRec, StreamRxRec : StreamRecType(
+      DataToModel   (10 downto 0),
+      DataFromModel (15 downto 0),
+      ParamToModel  (3 downto 0),
+      ParamFromModel(3 downto 0)
+    );
+
+  signal SB : ScoreBoardIDType;
+
+  signal TestDone : integer_barrier := 1;
+
   signal clk48 : std_logic := '1';
   signal reset : std_logic := '1';
   signal din   : std_logic_vector(10 downto 0);
@@ -40,28 +54,113 @@ architecture sim of crc5_tb is
   signal i_ready : std_logic;
   signal o_valid : std_logic;
   signal o_ready : std_logic;
+
+  -- Unused AXI Stream signals
+  signal id, dest, user, keep, strb : std_logic_vector(0 downto 0);
+  signal last : std_logic;
+
 begin
 
-  clk48 <= not clk48 after clk_period / 2;
+  Osvvm.ClockResetPkg.CreateClock (
+    Clk        => clk48,
+    Period     => clk_period
+    );
 
-  reset_p: process
+  Osvvm.ClockResetPkg.CreateReset (
+    Reset       => reset,
+    ResetActive => '1',
+    Clk         => clk48,
+    Period      => 2 * clk_period,
+    tpd         => pdelay
+    );
+
+  din_p: process
+    file crc5_values : text;
+    variable iline   : line;
+    variable crc     : std_logic_vector(15 downto 0);
   begin
-    reset <= '1';
-    wait until rising_edge(clk48);
-    wait until rising_edge(clk48);
-    reset <= '0' after pdelay;
+    file_open(crc5_values, CRC5_FILENAME, read_mode);
+    SetAlertLogName("CRC5_Test");
+    SB <= NewID("CRC5_SB");
+
+    wait until reset = '0';
+    WaitForClock(StreamTxRec, 2);
+
+    while not endfile(crc5_values) loop
+          readline(crc5_values, iline);
+          hread(iline, crc);
+          Push(SB, crc);
+          Send(StreamTxRec, crc(10 downto 0));
+    end loop;
+
+    WaitForClock(StreamTxRec, 5);
+    WaitForBarrier(TestDone);
+    ReportAlerts;
+    std.env.stop(GetAlertCount);
     wait;
-  end process;
+  end process din_p;
 
-  o_ready <= not reset after pdelay;
+  dout_p: process
+    variable crc : std_logic_vector(15 downto 0);
+  begin
+    while not (TestDone = 1) loop
+      Get(StreamRxRec, crc);
 
-  testctrl_i: component data11
+      if INSERT_ERROR then
+        if crc = x"2f10" then
+          crc := x"2e10";
+        end if;
+      end if;
+
+      Check(SB, crc);
+    end loop;
+    WaitForBarrier(TestDone);
+    wait;
+  end process dout_p;
+
+  tx_i: AxiStreamTransmitter
+    generic map (
+      tperiod_Clk    => clk_period
+      )
     port map (
-      clk48 => clk48,
-      reset => reset,
-      data  => din,
-      valid => i_valid,
-      ready => i_ready);
+      Clk       => clk48,
+      nReset    => reset,
+
+      TData     => din,
+      TValid    => i_valid,
+      TReady    => i_ready,
+
+      TID       => id,
+      TDest     => dest,
+      TUser     => user,
+      TStrb     => strb,
+      TKeep     => keep,
+      TLast     => last,
+
+      TransRec  => StreamTxRec
+      );
+
+  rx_i: AxiStreamReceiver
+    generic map (
+      tperiod_Clk    => clk_period
+      )
+    port map (
+      Clk       => clk48,
+      nReset    => reset,
+
+      TData     => dout,
+      TValid    => o_valid,
+      TReady    => o_ready,
+
+      TID       => id,
+      TDest     => dest,
+      TUser     => user,
+      TStrb     => strb,
+      TKeep     => keep,
+      TLast     => last,
+
+      TransRec  => StreamRxRec
+      );
 
   dut: component crc5_gen
     port map (
@@ -76,13 +175,15 @@ begin
       dout_valid => o_valid,
       dout_ready => o_ready);
 
-  print_p: process (clk48) is
-  begin
-    if rising_edge(clk48) then
-      if o_valid = '1' then
-        report to_hstring(dout);
+  dbg_print: if DEBUG_PRINT generate
+    print_p: process (clk48) is
+    begin
+      if rising_edge(clk48) then
+        if o_valid = '1' then
+          report to_hstring(dout);
+        end if;
       end if;
-    end if;
-  end process;
+    end process;
+  end generate;
 
 end architecture sim;

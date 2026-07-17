@@ -29,15 +29,22 @@ analyze: $(VHDL_FILES)
 elaborate: analyze
 	$(NVC) -e $(TEST)_test
 
-run: elaborate
+run: elaborate sim/crc5.txt
 	$(NVC) -r $(TEST)_test $(NVC_RUN_FLAGS)
 
 view: $(TRACE)
 	$(VIEWER) --state-file sim/$(TB).surf.ron $(TRACE)
 
-$(TRACE): elaborate
+$(TRACE): elaborate sim/crc5.txt
 	$(NVC) -r $(TEST)_test  $(NVC_RUN_FLAGS) --wave=$(TRACE)
 
 clean:
 	$(RM) *.fst
 	$(RM) -r ./work
+	$(RM) sim/crc5 sim/crc5.txt
+
+sim/crc5.txt: sim/crc5
+	$< > $@
+
+%: %.c
+	$(CC) -Wall -o $@ $<
