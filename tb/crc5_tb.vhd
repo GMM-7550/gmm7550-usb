@@ -44,7 +44,7 @@ architecture sim of crc5_tb is
 
   signal SB : ScoreBoardIDType;
 
-  signal TestDone : integer_barrier := 1;
+  signal stop_rx : boolean := false;
 
   signal clk48 : std_logic := '1';
   signal reset : std_logic := '1';
@@ -95,18 +95,18 @@ begin
           Send(StreamTxRec, crc(10 downto 0));
     end loop;
 
+    WaitForClock(StreamTxRec, 25); -- > 2 * max. latency (11 clocks)
+    stop_rx <= true;
     WaitForClock(StreamTxRec, 5);
-    WaitForBarrier(TestDone);
     ReportAlerts;
     std.env.stop(GetAlertCount);
-    wait;
   end process din_p;
 
   dout_p: process
     variable crc : std_logic_vector(15 downto 0);
   begin
     SetUseRandomDelays(StreamRxRec, USE_RANDOM);
-    while not (TestDone = 1) loop
+    while not stop_rx loop
       Get(StreamRxRec, crc);
 
       if INSERT_ERROR then
@@ -117,8 +117,6 @@ begin
 
       Check(SB, crc);
     end loop;
-    WaitForBarrier(TestDone);
-    wait;
   end process dout_p;
 
   tx_i: AxiStreamTransmitter
