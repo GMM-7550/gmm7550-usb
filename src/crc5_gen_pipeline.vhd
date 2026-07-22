@@ -45,7 +45,7 @@ begin
         clk => clk48,
         rst => reset,
 
-        a_data  => ppl_data_i(i-1),
+        a_data  => ppl_data_i(i),
         a_valid => ppl_valid(i-1),
         a_ready => ppl_ready(i-1),
 
