@@ -27,7 +27,14 @@ begin
 
   ppl_g: for i in 1 to N_STAGES_G generate
 
-    ppl_data_i(i-1) <= ppl_data_o(i-1);
+    -- Propogate 11 bit input data through the pipeline
+    ppl_data_i(i)(10 downto 0) <= ppl_data_o(i-1)(10 downto 0);
+
+    -- Update CRC 5
+    ppl_data_i(i)(15 downto 11) <= "0" & ppl_data_o(i-1)(15 downto 12)
+                                   when (ppl_data_o(i-1)(11) xor ppl_data_o(i-1)(i-1)) = '0'
+                                   else
+                                   ("0" & ppl_data_o(i-1)(15 downto 12)) xor "10100";
 
     ppl_reg_i: entity work.generic_buffer
       generic map (
