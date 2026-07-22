@@ -1,4 +1,4 @@
-TEST ?= crc5_pipeline
+TEST ?= crc5_pipeline_comb
 
 DUT := crc5
 TB := $(DUT)_tb

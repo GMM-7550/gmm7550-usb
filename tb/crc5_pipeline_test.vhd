@@ -1,4 +1,4 @@
-configuration crc5_pipeline_test of crc5_tb is
+configuration crc5_pipeline_comb_test of crc5_tb is
   for sim
     for dut: crc5_gen
       use entity work.crc5_gen_e(pipeline)
