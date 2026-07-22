@@ -2,6 +2,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity crc5_gen_e is
+  generic (
+    N_STAGES_G : integer := 11;
+    CONFIG_SKID_G : boolean_vector(0 to N_STAGES_G) := (others => false);
+    CONFIG_PIPE_G : boolean_vector(0 to N_STAGES_G) := (others => false));
   port (
     clk48      : in  std_logic;
     reset      : in  std_logic;
