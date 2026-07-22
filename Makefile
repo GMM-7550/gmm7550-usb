@@ -7,7 +7,7 @@ TRACE := $(TEST).fst
 
 NVC := nvc
 
-# NVC_RUN_FLAGS := $(NVC_FLAGS) --stop-time=500ns
+NVC_RUN_FLAGS := $(NVC_FLAGS) --dump-arrays --stop-time=5ms
 
 VIEWER := surfer
 
