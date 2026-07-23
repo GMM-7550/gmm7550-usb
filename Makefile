@@ -22,7 +22,7 @@ VHDL_FILES += $(wildcard tb/*_e.vhd)
 VHDL_FILES += $(wildcard tb/*_tb.vhd)
 VHDL_FILES += $(wildcard tb/*_test.vhd)
 
-.PHONY: all clean analyze elaborate run view
+.PHONY: all clean analyze elaborate run view crc_ref
 
 all: $(TRACE)
 
@@ -47,9 +47,12 @@ clean:
 	$(RM) *.fst
 	$(RM) -r ./work
 	$(RM) sim/crc5 sim/crc5.txt
+	$(RM) sim/crc16
 
 sim/crc5.txt: sim/crc5
 	$< > $@
+
+crc_ref: sim/crc5 sim/crc16
 
 %: %.c
 	$(CC) -Wall -o $@ $<
