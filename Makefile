@@ -14,6 +14,7 @@ VIEWER := surfer
 # VHDL_FILES := $(wildcard src/*.vhd)
 VHDL_FILES := src/skid_buffer.vhd src/pipeline_buffer.vhd src/generic_buffer.vhd
 VHDL_FILES += src/crc5_gen_e.vhd src/crc5_gen_sequential.vhd src/crc5_gen_pipeline.vhd
+VHDL_FILES += src/crc16_gen.vhd
 VHDL_FILES += src/bs_nrzi_tx.vhd src/bs_nrzi_rx.vhd
 VHDL_FILES += src/ddff.vhd
 
