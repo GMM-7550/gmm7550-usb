@@ -11,13 +11,9 @@ NVC_RUN_FLAGS := $(NVC_FLAGS) --dump-arrays --stop-time=5ms
 
 VIEWER := surfer
 
-# VHDL_FILES := $(wildcard src/*.vhd)
-VHDL_FILES := src/skid_buffer.vhd src/pipeline_buffer.vhd src/generic_buffer.vhd
-VHDL_FILES += src/crc5_gen_e.vhd src/crc5_gen_sequential.vhd src/crc5_gen_pipeline.vhd
-VHDL_FILES += src/crc16_gen.vhd
-VHDL_FILES += src/bs_nrzi_tx.vhd src/bs_nrzi_rx.vhd
-VHDL_FILES += src/ddff.vhd
-VHDL_FILES += src/fs_io.vhd
+include src_files.mk
+
+VHDL_FILES := $(addprefix src/,$(SRC_FILES))
 
 VHDL_FILES += $(wildcard tb/*_e.vhd)
 VHDL_FILES += $(wildcard tb/*_tb.vhd)
