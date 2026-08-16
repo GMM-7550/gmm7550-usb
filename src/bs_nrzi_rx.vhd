@@ -325,7 +325,7 @@ begin
         end if;
 
       when ERR_TIME_ST =>
-        bit_err <= '1';
+        rx_err <= '1';
         if se0 = '1' then
           rx_fsm_next <= EOP_ST;
         else
