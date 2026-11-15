@@ -4,3 +4,4 @@ SRC_FILES += crc16_gen.vhd
 SRC_FILES += bs_nrzi_tx.vhd bs_nrzi_rx.vhd
 SRC_FILES += ddff.vhd
 SRC_FILES += fs_io.vhd
+SRC_FILES += pkt_rx.vhd
