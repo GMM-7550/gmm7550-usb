@@ -13,7 +13,8 @@ libs: $(USB_LIB)
 
 $(USB_LIB): $(USB_LIB_VHDL_FILES) | $(USB_LIB_DIR)
 	for f in $(USB_LIB_VHDL_FILES); do \
-	  $(GHDL) analyze $(GHDL_FLAGS) --warn-no-default-binding --work=$(USB_LIB_NAME) $$f || exit 1; \
+	  $(GHDL) analyze $(GHDL_FLAGS) --workdir=$(USB_LIB_DIR) \
+	  --warn-no-default-binding --work=$(USB_LIB_NAME) $$f || exit 1; \
 	done
 
 $(USB_LIB_DIR):
