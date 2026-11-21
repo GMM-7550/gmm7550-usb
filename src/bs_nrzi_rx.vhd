@@ -356,7 +356,7 @@ begin
           rx_fsm_next <= ERR_FRAME_ST;
         end if;
 
-      when others => null;
+      -- when others => null;
     end case;
   end process rx_fsm_p;
 

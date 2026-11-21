@@ -102,7 +102,8 @@ begin
     end if;
   end process one_cnt_p;
 
-  tx_p: process (txd, se0, tx_en)
+  tx_p: process (txd, se0, tx_en,
+                 force_J, bypass, s_reg)
   begin
     if tx_en = '0' then
       tx_dp <= '1';
@@ -226,7 +227,7 @@ begin
           tx_fsm_next <= EOP_J_ST;
         end if;
 
-      when others => null;
+      -- when others => null;
     end case;
   end process tx_fsm_p;
 

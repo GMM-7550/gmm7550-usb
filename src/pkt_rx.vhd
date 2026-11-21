@@ -30,9 +30,9 @@ entity pkt_rx is
 end entity pkt_rx;
 
 architecture rtl of pkt_rx is
-  type pkt_fsm_t is (IDLE_ST, SYNC_ST);
-  signal pkt_state : pkt_fsm_t;
-  signal pkt_next  : pkt_fsm_t;
+  -- type pkt_fsm_t is (IDLE_ST, SYNC_ST);
+  -- signal pkt_state : pkt_fsm_t;
+  -- signal pkt_next  : pkt_fsm_t;
 begin
 
   frame_num <= (others => '0');

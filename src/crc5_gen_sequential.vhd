@@ -113,7 +113,7 @@ begin
           crc_next <= RESULT_ST;
         end if;
 
-      when others => null;
+      -- when others => null;
     end case;
   end process crc_fsm_p;
 
