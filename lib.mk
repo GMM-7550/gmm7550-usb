@@ -10,7 +10,10 @@ USB_LIB_VHDL_FILES := $(addprefix $(USB_SRC_DIR)/src/,$(SRC_FILES))
 SRC_FILES :=
 
 $(USB_LIB): $(USB_LIB_VHDL_FILES) $(CC_LIB) | $(USB_LIB_DIR)
-	for f in $(USB_LIB_VHDL_FILES); do \
+	@echo
+	@echo "### Build library: " $(USB_LIB_NAME) "($(USB_SRC_DIR))"
+	@for f in $(USB_LIB_VHDL_FILES); do \
+	  echo "  " `basename $$f`; \
 	  $(GHDL) analyze $(GHDL_FLAGS) --workdir=$(USB_LIB_DIR) \
 	  --warn-no-default-binding --work=$(USB_LIB_NAME) $$f || exit 1; \
 	done
